@@ -20,42 +20,96 @@ class RegisterStall extends StatefulWidget {
 
 class _RegisterStallState extends State<RegisterStall> {
   var nameController = TextEditingController();
+  final startDateTimeController = TextEditingController();
+  final endDateTimeController = TextEditingController();
   File? _image;
   bool _uploading = false; // Flag to track whether the image is uploading
   String imageUrl = "";
   String stallName = "";
   final picker = ImagePicker();
+  DateTime? startDateTime;
+  DateTime? endDateTime;
+  bool _isFnB = false;
+
+  void _pickStartDateTime(BuildContext context) async {
+    startDateTime = await selectDateTime(context);
+    if (startDateTime != null) {
+      // Update the TextEditingController
+      startDateTimeController.text = startDateTime.toString();
+    }
+  }
+
+  void _pickEndDateTime(BuildContext context) async {
+    endDateTime = await selectDateTime(context);
+    if (endDateTime != null) {
+      // Update the TextEditingController
+      endDateTimeController.text = endDateTime.toString();
+    }
+  }
 
   Future<void> addStall() async {
-  try {
-    // Get the current timestamp
-    DateTime createdAt = DateTime.now();
+    try {
+      // Get the current timestamp
+      DateTime createdAt = DateTime.now();
 
-    // Add the stall with the createdAt timestamp
-    DocumentReference stallRef = await FirebaseFirestore.instance
-        .collection('stalls')
-        .add({
-      'name': stallName,
-      'imageUrl': imageUrl,
-      'userId': widget.userId,
-      'createdAt': createdAt,
-    });
+      // Add the stall with the createdAt timestamp
+      DocumentReference stallRef =
+          await FirebaseFirestore.instance.collection('stalls').add({
+        'name': stallName,
+        'imageUrl': imageUrl,
+        'userId': widget.userId,
+        'createdAt': createdAt,
+        'startDateTime': startDateTime,
+        'endDateTime': endDateTime,
+        'isFnB': _isFnB
+      });
 
-    // Navigate to the seller products screen
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            SellerProductsScreen(widget.userId, stallRef.id),
-      ),
+      // Navigate to the seller products screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              SellerProductsScreen(widget.userId, stallRef.id),
+        ),
+      );
+
+      print('Stall added successfully');
+    } catch (error) {
+      print('Error adding stall: $error');
+    }
+  }
+
+  Future<DateTime?> selectDateTime(BuildContext context) async {
+    // Show Date Picker
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2022), // Earliest date allowed
+      lastDate: DateTime(2100), // Latest date allowed
     );
 
-    print('Stall added successfully');
-  } catch (error) {
-    print('Error adding stall: $error');
-  }
-}
+    if (pickedDate != null) {
+      // Show Time Picker
+      TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
 
+      if (pickedTime != null) {
+        // Combine Date and Time
+        DateTime finalDateTime = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+
+        return finalDateTime; // Return DateTime
+      }
+    }
+    return null; // Return null if nothing is picked
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,16 +147,54 @@ class _RegisterStallState extends State<RegisterStall> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                 RoundedTextField(
+                  RoundedTextField(
                     label: 'Name of Your Stall',
                     textColor: Colors.black87,
                     controller: nameController,
-                    isObscure: false, 
+                    isObscure: false,
                     obscureText: false,
                     keyboardType: TextInputType.name,
                     validator: (value) {
                       return null;
-                      },
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  RoundedTextField(
+                    label: 'Start Date and Time',
+                    isObscure: false,
+                    obscureText: false,
+                    textColor: Colors.black87,
+                    controller: startDateTimeController,
+                    readOnly:
+                        true, // Make it read-only so user can only pick date/time
+                    onTap: () => _pickStartDateTime(context),
+                  ),
+                  SizedBox(height: 16),
+                  RoundedTextField(
+                    label: 'End Date and Time',
+                    isObscure: false,
+                    obscureText: false,
+                    textColor: Colors.black87,
+                    controller: endDateTimeController,
+                    readOnly: true,
+                    onTap: () => _pickEndDateTime(context),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _isFnB,
+                        onChanged: (bool? newValue) {
+                          setState(() {
+                            _isFnB = newValue ?? false;
+                          });
+                        },
+                      ),
+                      Text(
+                        "Check if Stall will sell Food or Beverages",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   _image != null
@@ -191,7 +283,9 @@ class _RegisterStallState extends State<RegisterStall> {
                                 );
                               },
                         style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 126, 70, 62),
+                          foregroundColor: Colors.white,
+                          backgroundColor:
+                              const Color.fromARGB(255, 126, 70, 62),
                         ),
                         child: const Text(
                           'Select Image',
@@ -244,7 +338,8 @@ class _RegisterStallState extends State<RegisterStall> {
                                 }
                               },
                         style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white, backgroundColor: Color.fromARGB(255, 126, 70, 62),
+                          foregroundColor: Colors.white,
+                          backgroundColor: Color.fromARGB(255, 126, 70, 62),
                         ),
                         child: const Text(
                           'Confirm',

@@ -18,7 +18,7 @@ class _SignInScreenState extends State<SellerSignInScreen> {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   bool rememberMe = false;
-  bool isLoading = false;
+  bool _isLoading = false;
 
   bool _isSecurePasswordSeller = true;
   Timer? _timer;
@@ -142,12 +142,12 @@ class _SignInScreenState extends State<SellerSignInScreen> {
                       Stack(
                         children: [
                           ElevatedButton(
-                            onPressed: isLoading ? null : () async {
+                            onPressed: _isLoading ? null : () async {
 
                               
 
                               setState(() {
-                              isLoading = true; // Show the loading indicator
+                                _isLoading = true; // Show the loading indicator
                             });
 
                             try {
@@ -175,7 +175,7 @@ class _SignInScreenState extends State<SellerSignInScreen> {
                               );
                             } finally {
                               setState(() {
-                                isLoading = false; // Hide the loading indicator
+                                _isLoading = false; // Hide the loading indicator
                               });
                             }
                             },
@@ -189,6 +189,12 @@ class _SignInScreenState extends State<SellerSignInScreen> {
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
+                          if (_isLoading)
+                        const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.brown,
+                          ),
+                        ),
                         ],
                       ),
                       const SizedBox(height: 5),

@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -45,14 +43,18 @@ class StallsScreen extends StatelessWidget {
               return Center(child: Text('No data available.'));
             }
 
-            List<DocumentSnapshot> stalls = snapshot.data!.docs;
+            List<DocumentSnapshot> allStalls = snapshot.data!.docs;
 
-            // Check if all image URLs are loaded
-            bool allImageUrlsLoaded =
-                stalls.every((stall) => stall.get('imageUrl') != null);
+            // Filter stalls based on current DateTime
+            DateTime currentTime = DateTime.now();
+            List<DocumentSnapshot> activeStalls = allStalls.where((stall) {
+              DateTime startDateTime = (stall.get('startDateTime') as Timestamp).toDate();
+              DateTime endDateTime = (stall.get('endDateTime') as Timestamp).toDate();
+              return currentTime.isAfter(startDateTime) && currentTime.isBefore(endDateTime);
+            }).toList();
 
-            if (!allImageUrlsLoaded) {
-              return Center(child: CircularProgressIndicator());
+            if (activeStalls.isEmpty) {
+              return Center(child: Text('No active stalls at the moment.'));
             }
 
             return ListView(
@@ -76,11 +78,11 @@ class StallsScreen extends StatelessWidget {
                     crossAxisSpacing: 10.0,
                     mainAxisSpacing: 25.0,
                   ),
-                  itemCount: stalls.length,
+                  itemCount: activeStalls.length,
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    DocumentSnapshot stall = stalls[index];
+                    DocumentSnapshot stall = activeStalls[index];
                     String stallName = stall.get('name');
                     String imageUrl = stall.get('imageUrl');
 
@@ -100,7 +102,7 @@ class StallsScreen extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 10.0),
                             child: Container(
                               width: double.infinity,
-                              height: 160.0,
+                              height: MediaQuery.of(context).size.height / 5.3,
                               decoration: BoxDecoration(
                                 color: Colors.black,
                                 borderRadius: BorderRadius.circular(10.0),

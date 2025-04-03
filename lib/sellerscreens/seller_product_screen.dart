@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:xaviers_market/sellerscreens/seller_edit_stall.dart';
 import 'package:xaviers_market/sellerscreens/seller_productdetails.dart';
 import 'package:xaviers_market/sellerscreens/seller_stalls_screen.dart';
 import 'package:xaviers_market/sellerscreens/add_product.dart';
@@ -169,7 +170,7 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
                                                 horizontal: 5.0),
                                             child: Container(
                                               width: double.infinity,
-                                              height: 165.0,
+                                              height: MediaQuery.of(context).size.height/5.3,
                                               decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                   image: NetworkImage(imageUrl),
@@ -199,6 +200,27 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
                       },
                     ),
                     SizedBox(height: 50),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditStall(widget.userId, widget.stallId),
+                          ),
+                        );
+                      }, 
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white, backgroundColor: Colors.brown, // Change text color here
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30,
+                            vertical: 12), // Adjust button size here
+                      ),
+                      child: const Text(
+                        'Edit Stall Details',
+                        style: TextStyle(fontSize: 16), // Change text size here
+                      ),
+                    ),
+                    SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () async {
                         showDialog(

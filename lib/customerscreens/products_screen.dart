@@ -112,7 +112,7 @@ class ProductsScreen extends StatelessWidget {
                                         horizontal: 5.0),
                                     child: Container(
                                       width: double.infinity,
-                                      height: 160.0,
+                                      height: MediaQuery.of(context).size.height/5.3,
                                       decoration: BoxDecoration(
                                         image: DecorationImage(
                                           image: NetworkImage(imageUrl),

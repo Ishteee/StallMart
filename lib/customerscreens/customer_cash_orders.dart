@@ -4,9 +4,9 @@ import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-class SellerCompletedBookingsScreen extends StatelessWidget {
+class CompletedCashOrdersScreen extends StatelessWidget {
   final String userId;
-  const SellerCompletedBookingsScreen(this.userId);
+  const CompletedCashOrdersScreen(this.userId);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,8 @@ class SellerCompletedBookingsScreen extends StatelessWidget {
             stream: FirebaseFirestore.instance
                 .collection('users')
                 .doc(userId)
-                .collection('comp_bookings')
+                .collection('orders')
+                .where('method', isEqualTo: 'cash')
                 .snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (!snapshot.hasData) {
@@ -27,20 +28,21 @@ class SellerCompletedBookingsScreen extends StatelessWidget {
               } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return const Center(
                   child: Text(
-                    'No Completed Bookings Yet',
+                    'No Cash Orders Yet',
                     style: TextStyle(
-                        color: const Color.fromARGB(255, 126, 70, 62),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 126, 70, 62),
+                    ),
                   ),
                 );
               } else {
-                final c_bookings = snapshot.data!.docs;
+                final orders = snapshot.data!.docs;
                 return ListView.builder(
-                  itemCount: c_bookings.length,
+                  itemCount: orders.length,
                   itemBuilder: (context, index) {
-                    final c_book = c_bookings[index];
-                    return _buildOrderContainer(context, c_book);
+                    final order = orders[index];
+                    return _buildOrderContainer(context, order);
                   },
                 );
               }
@@ -51,8 +53,8 @@ class SellerCompletedBookingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderContainer(BuildContext context, DocumentSnapshot c_book) {
-    var purchaseTime = c_book['purchaseTime'];
+  Widget _buildOrderContainer(BuildContext context, DocumentSnapshot order) {
+    var purchaseTime = order['purchaseTime'];
     var purchaseDateTime = DateTime.fromMillisecondsSinceEpoch(purchaseTime);
     var date = DateFormat('dd/MM/yyyy').format(purchaseDateTime);
     var time = DateFormat('h:mm a').format(purchaseDateTime);
@@ -75,10 +77,10 @@ class SellerCompletedBookingsScreen extends StatelessWidget {
                     children: [
                       Text(
                         "Stall Name",
-                        style: TextStyle(fontSize: 15),
+                        style: GoogleFonts.raleway(fontSize: 15, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 128, 69, 60),),
                       ),
                       Text(
-                        c_book['stallName'],
+                        order['stallName'],
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 17),
                       ),
@@ -89,7 +91,7 @@ class SellerCompletedBookingsScreen extends StatelessWidget {
                     children: [
                       Text(
                         "Date and Time of Purchase",
-                        style: TextStyle(fontSize: 15),
+                        style: GoogleFonts.raleway(fontSize: 15, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 128, 69, 60),),
                       ),
                       Text(
                         "$date - $time",
@@ -107,9 +109,9 @@ class SellerCompletedBookingsScreen extends StatelessWidget {
                       color: Colors.black,
                       fontSize: 18), // Adjust the style as needed
                   children: [
-                    TextSpan(text: 'Products: '),
+                    TextSpan(text: 'Products: ', style: GoogleFonts.raleway(fontSize: 17, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 128, 69, 60),),),
                     TextSpan(
-                        text: c_book['products'],
+                        text: order['products'],
                         style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
@@ -120,10 +122,10 @@ class SellerCompletedBookingsScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Total Bill Amount: ',
-                    style: TextStyle(fontSize: 17),
+                    style: GoogleFonts.raleway(fontSize: 17, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 128, 69, 60),),
                   ),
                   Text(
-                    c_book['totalAmount'].toString(),
+                    order['totalAmount'].toString(),
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                 ],

@@ -4,9 +4,9 @@ import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-class CompletedOrdersScreen extends StatelessWidget {
+class SellerCashOrdersScreen extends StatelessWidget {
   final String userId;
-  const CompletedOrdersScreen(this.userId);
+  const SellerCashOrdersScreen(this.userId);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,8 @@ class CompletedOrdersScreen extends StatelessWidget {
             stream: FirebaseFirestore.instance
                 .collection('users')
                 .doc(userId)
-                .collection('orders')
+                .collection('comp_bookings')
+                .where('method', isEqualTo: 'cash')
                 .snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (!snapshot.hasData) {
@@ -27,21 +28,20 @@ class CompletedOrdersScreen extends StatelessWidget {
               } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return const Center(
                   child: Text(
-                    'No Orders Yet',
+                    'No Cash Orders Yet',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 126, 70, 62),
-                    ),
+                        color: const Color.fromARGB(255, 126, 70, 62),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20),
                   ),
                 );
               } else {
-                final orders = snapshot.data!.docs;
+                final c_bookings = snapshot.data!.docs;
                 return ListView.builder(
-                  itemCount: orders.length,
+                  itemCount: c_bookings.length,
                   itemBuilder: (context, index) {
-                    final order = orders[index];
-                    return _buildOrderContainer(context, order);
+                    final c_book = c_bookings[index];
+                    return _buildOrderContainer(context, c_book);
                   },
                 );
               }
@@ -52,8 +52,8 @@ class CompletedOrdersScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderContainer(BuildContext context, DocumentSnapshot order) {
-    var purchaseTime = order['purchaseTime'];
+  Widget _buildOrderContainer(BuildContext context, DocumentSnapshot c_book) {
+    var purchaseTime = c_book['purchaseTime'];
     var purchaseDateTime = DateTime.fromMillisecondsSinceEpoch(purchaseTime);
     var date = DateFormat('dd/MM/yyyy').format(purchaseDateTime);
     var time = DateFormat('h:mm a').format(purchaseDateTime);
@@ -79,7 +79,7 @@ class CompletedOrdersScreen extends StatelessWidget {
                         style: TextStyle(fontSize: 15),
                       ),
                       Text(
-                        order['stallName'],
+                        c_book['stallName'],
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 17),
                       ),
@@ -110,7 +110,7 @@ class CompletedOrdersScreen extends StatelessWidget {
                   children: [
                     TextSpan(text: 'Products: '),
                     TextSpan(
-                        text: order['products'],
+                        text: c_book['products'],
                         style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
@@ -124,7 +124,7 @@ class CompletedOrdersScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 17),
                   ),
                   Text(
-                    order['totalAmount'].toString(),
+                    c_book['totalAmount'].toString(),
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                 ],

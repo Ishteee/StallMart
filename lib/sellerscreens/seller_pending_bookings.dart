@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class SellerPendingBookingsScreen extends StatefulWidget {
@@ -174,11 +175,7 @@ class _SellerPendingBookingsScreenState
                                           children: [
                                             Text(
                                               "Stall Name",
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                color: const Color.fromARGB(
-                                                    255, 126, 70, 62),
-                                              ),
+                                              style: GoogleFonts.raleway(fontSize: 15, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 128, 69, 60),),
                                             ),
                                             Text(
                                               stallName,
@@ -194,7 +191,7 @@ class _SellerPendingBookingsScreenState
                                           children: [
                                             Text(
                                               "Date and Time",
-                                              style: TextStyle(fontSize: 15),
+                                              style: GoogleFonts.raleway(fontSize: 15, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 128, 69, 60),),
                                             ),
                                             Text(
                                               "${date} - ${time}",
@@ -206,17 +203,19 @@ class _SellerPendingBookingsScreenState
                                         ),
                                       ],
                                     ),
-                                    SizedBox(height: 25),
-                                    Text(
-                                      'Stall Name: $stallName',
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Text(
-                                      'Customer Name: $customerName',
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                    SizedBox(height: 10),
+                                    SizedBox(height: 15),
+                                    RichText(
+                text: TextSpan(
+                  style: GoogleFonts.raleway(fontSize: 15, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 128, 69, 60),), // Adjust the style as needed
+                  children: [
+                    TextSpan(text: 'Customer Name: '),
+                    TextSpan(
+                        text: customerName,
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+                                    SizedBox(height: 15),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -225,10 +224,7 @@ class _SellerPendingBookingsScreenState
                                           children: [
                                             Text(
                                               'Products',
-                                              style: TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                              style: GoogleFonts.raleway(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 128, 69, 60),),
                                             ),
                                             Text(
                                               productsText,
@@ -243,12 +239,12 @@ class _SellerPendingBookingsScreenState
                                     SizedBox(height: 10),
                                     Text(
                                       'Total Amount: $totalAmount',
-                                      style: TextStyle(fontSize: 15),
+                                      style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 128, 69, 60), fontWeight: FontWeight.bold),
                                     ),
                                     SizedBox(height: 10),
                                     Text(
                                       'Booking Auto-Cancel: $remainingMinutes:${remainingSeconds.toString().padLeft(2, '0')}',
-                                      style: TextStyle(fontSize: 15),
+                                      style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 128, 69, 60), fontWeight: FontWeight.bold),
                                     ),
                                     SizedBox(height: 10),
                                     Row(
@@ -294,7 +290,8 @@ class _SellerPendingBookingsScreenState
                                                               productsText,
                                                           'totalAmount':
                                                               totalAmount,
-                                                          'stallName': stallName
+                                                          'stallName': stallName,
+                                                          'method': 'cash'
                                                         });
 
                                                         await FirebaseFirestore
@@ -311,7 +308,8 @@ class _SellerPendingBookingsScreenState
                                                               productsText,
                                                           'totalAmount':
                                                               totalAmount,
-                                                          'stallName': stallName
+                                                          'stallName': stallName,
+                                                          'method': 'cash'
                                                         });
 
                                                         for (var product
@@ -328,6 +326,14 @@ class _SellerPendingBookingsScreenState
                                                             .collection('carts')
                                                             .doc(cart.id)
                                                             .delete();
+
+                                                        await FirebaseFirestore.instance
+                                                            .collection('users')
+                                                            .doc(widget.userId)
+                                                            .collection('bookings')
+                                                            .doc(customerId)
+                                                            .delete();         
+
                                                       },
                                                       child: Text('Yes'),
                                                     ),
@@ -403,8 +409,17 @@ class _SellerPendingBookingsScreenState
                                                                 widget.userId,
                                                             'stallName':
                                                                 stallName,
-                                                            'totalAmount': ''
+                                                            'totalAmount': '',
+                                                            'isFnB': cart['isFnB']
                                                           });
+
+                                                          await FirebaseFirestore.instance
+                                                            .collection('users')
+                                                            .doc(widget.userId)
+                                                            .collection('bookings')
+                                                            .doc(customerId)
+                                                            .delete();
+
                                                         }
                                                       },
                                                       child: Text('Yes'),

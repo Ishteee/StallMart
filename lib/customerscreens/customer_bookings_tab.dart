@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:xaviers_market/customerscreens/customer_comp_bookings.dart';
-import 'package:xaviers_market/customerscreens/customer_pending_bookings.dart';
+import 'package:xaviers_market/customerscreens/customer_cash_orders.dart';
+import 'package:xaviers_market/customerscreens/customer_online_orders.dart';
+import 'package:xaviers_market/customerscreens/customer_pending_orders.dart';
 
 class TestBookingScreen extends StatefulWidget {
   final String userId;
@@ -19,7 +20,7 @@ class _TestBookingScreenState extends State<TestBookingScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _tabController.index = 0; // Set default tab index to 0 (first page)
   }
 
@@ -30,7 +31,7 @@ class _TestBookingScreenState extends State<TestBookingScreen>
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 242, 233, 226),
         title: Text(
-          'Bookings',
+          'Orders',
           style: TextStyle(
               color: const Color.fromARGB(255, 126, 70, 62),
               fontWeight: FontWeight.bold,
@@ -42,8 +43,9 @@ class _TestBookingScreenState extends State<TestBookingScreen>
           TabBar(
             controller: _tabController,
             tabs: [
-              Tab(text: 'Pending Bookings'),
-              Tab(text: 'Completed Bookings'),
+              Tab(text: 'Online Orders'),
+              Tab(text: 'Cash Orders'),
+              Tab(text: 'Pending Orders'),
             ],
             labelColor: const Color.fromARGB(255, 126, 70, 62),
             unselectedLabelColor: const Color.fromARGB(255, 126, 70, 62),
@@ -52,8 +54,9 @@ class _TestBookingScreenState extends State<TestBookingScreen>
             child: TabBarView(
               controller: _tabController,
               children: [
+                CompletedOnlineOrdersScreen(widget.userId),
+                CompletedCashOrdersScreen(widget.userId),
                 PendingBookingsScreen(widget.userId),
-                CompletedOrdersScreen(widget.userId),
               ],
             ),
           ),

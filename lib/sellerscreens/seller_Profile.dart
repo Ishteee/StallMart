@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:xaviers_market/sellerscreens/seller_bookings_tab.dart';
-import 'package:xaviers_market/sellerscreens/seller_comp_bookings.dart';
+import 'package:xaviers_market/sellerscreens/seller_cash_orders.dart';
 
 class Profile extends StatefulWidget {
   final String userId;

@@ -62,7 +62,7 @@ class MerchsScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 10.0, bottom: 30),
                   child: Center(
                     child: Text(
-                      'Xavier\'s Merchandise',
+                      'Merchandise',
                       style: GoogleFonts.raleway(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
@@ -101,7 +101,7 @@ class MerchsScreen extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 10.0),
                             child: Container(
                               width: double.infinity,
-                              height: 160.0,
+                              height: MediaQuery.of(context).size.height/5.3,
                               decoration: BoxDecoration(
                                 color: Colors.black,
                                 borderRadius: BorderRadius.circular(10.0),

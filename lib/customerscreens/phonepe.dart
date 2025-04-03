@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,7 +11,9 @@ import 'package:xaviers_market/customerscreens/CustomerNavbar.dart';
 
 class PhonePePayment extends StatefulWidget {
   final String userId;
-  const PhonePePayment(this.userId);
+  final QueryDocumentSnapshot<Object?> cartDoc;
+  final double totalAmount;
+  const PhonePePayment(this.userId, this.cartDoc, this.totalAmount);
 
   @override
   State<PhonePePayment> createState() => _PhonePePaymentState();
@@ -103,15 +106,39 @@ class _PhonePePaymentState extends State<PhonePePayment> {
       "X-MERCHANT-ID": merchantId
     };
 
-    await http.get(Uri.parse(url), headers: headers).then((value) {
+    await http.get(Uri.parse(url), headers: headers).then((value) async {
       Map<String, dynamic> res = jsonDecode(value.body);
 
       if (res["success"] &&
           res["code"] == "PAYMENT_SUCCESS" &&
           res['data']['state'] == "COMPLETED") {
         Fluttertoast.showToast(msg: res["message"]);
-        
 
+        try {
+
+          var productSnapshot = await widget.cartDoc.reference
+            .collection('products') // Access the 'products' sub-collection
+            .get();
+
+          var productsText = productSnapshot.docs
+            .map((product) =>
+                '${product['name']} x ${product['quantity']}')
+            .join('\n');
+
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(widget.userId)
+              .collection('orders')
+              .add({
+            'purchaseTime': DateTime.now().millisecondsSinceEpoch,
+            'products': productsText,
+            'totalAmount': widget.totalAmount,
+            'stallName': widget.cartDoc['stallName'],
+          });
+          print("Order added successfully!");
+
+
+        } catch (e) {}
       } else {
         Fluttertoast.showToast(msg: "Something went wrong!");
       }
@@ -171,38 +198,45 @@ class _PhonePePaymentState extends State<PhonePePayment> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                  'Payment Failed',
+                'Payment Failed',
+                style: GoogleFonts.raleway(
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 126, 70, 62),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  'Pressing the back button or closing the app may be the reason of payment failure.',
                   style: GoogleFonts.raleway(
-                    fontSize: 35,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 126, 70, 62),
                   ),
                 ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                    'Pressing the back button or closing the app may be the reason of payment failure.',
-                    style: GoogleFonts.raleway(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 126, 70, 62),
-                    ),
-                  ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 128, 69, 60)),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 128, 69, 60)),
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => customerBottomNavigation(
-                            widget.userId, 2), // Pass document ID to SellerHomeScreen
+                            widget.userId,
+                            2), // Pass document ID to SellerHomeScreen
                       ),
                     );
-                  }, 
-                  child: Text("Redirect to Cart", style: TextStyle(color: Colors.white,),),
+                  },
+                  child: Text(
+                    "Redirect to Cart",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ],

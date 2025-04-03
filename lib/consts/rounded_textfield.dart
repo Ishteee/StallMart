@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 
 class RoundedTextField extends StatefulWidget {
   final String label;
+  final String? initialValue;
   final Color textColor;
   final TextEditingController controller;
   final bool isObscure;
+  final bool? readOnly;
   final RegExp? validatorRegex;
   final String? Function(String?)? validatorFunction;
   final TextInputType? keyboardType;
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
+  final GestureTapCallback? onTap;
   final AutovalidateMode? autovalidateMode; // Added autovalidateMode
 
   const RoundedTextField({
@@ -18,10 +21,13 @@ class RoundedTextField extends StatefulWidget {
     required this.textColor,
     required this.controller,
     required this.isObscure,
+    this.readOnly,
+    this.initialValue,
     this.validatorRegex,
     this.validatorFunction,
     this.keyboardType,
     this.validator,
+    this.onTap,
     this.suffixIcon,
     this.autovalidateMode, required bool obscureText,
   }) : super(key: key);
@@ -58,6 +64,8 @@ class _RoundedTextFieldState extends State<RoundedTextField> {
                   color: Color.fromARGB(255, 199, 173, 162), // Use a suitable background color
                 ),
                 child: TextFormField(
+                  
+                  initialValue: widget.initialValue,
                   controller: widget.controller,
                   obscureText: _isObscure,
                   style: TextStyle(color: widget.textColor), // Text color
@@ -70,6 +78,7 @@ class _RoundedTextFieldState extends State<RoundedTextField> {
                   keyboardType: widget.keyboardType,
                   autovalidateMode: widget.autovalidateMode, // Added autovalidateMode
                   validator: widget.validator,
+                  onTap: widget.onTap,
                 ),
               ),
               Positioned(

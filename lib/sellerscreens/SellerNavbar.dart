@@ -64,7 +64,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
               
               const BottomNavigationBarItem(
                 icon: Icon(Icons.money),
-                label: 'Bookings',
+                label: 'Orders',
               ),
               const BottomNavigationBarItem(
                 icon: Icon(Icons.person),

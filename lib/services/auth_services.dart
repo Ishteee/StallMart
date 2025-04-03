@@ -101,32 +101,66 @@ Future<void> signInAsSeller(String email, String password, BuildContext context,
         box.put('isSignedIn', true);
         box.put('isSeller', true);
 
-        // Navigate to the seller home screen and pass the document ID
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BottomNavigation(
-                userId), // Pass document ID to SellerHomeScreen
-          ),
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Success'),
+              content: Text("Log In Successful"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    // Navigate to the seller home screen and pass the document ID
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BottomNavigation(
+                            userId), // Pass document ID to SellerHomeScreen
+                      ),
+                    );
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
         );
       } else {
         await FirebaseMessaging.instance.subscribeToTopic('customers');
-        // Navigate to the seller home screen and pass the document ID
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BottomNavigation(
-                userId), // Pass document ID to SellerHomeScreen
-          ),
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Success'),
+              content: Text("Log In Successful"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    // Navigate to the seller home screen and pass the document ID
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BottomNavigation(
+                            userId), // Pass document ID to SellerHomeScreen
+                      ),
+                    );
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
         );
       }
     } else {
       // The user is not a seller, sign them out
       await FirebaseAuth.instance.signOut();
       print('User is not a seller. Sign-in denied.');
+      throw Exception('User is not a seller. Sign-in denied.');
     }
   } catch (error) {
     print('Error signing in as seller: $error');
+    throw Exception('Error signing in as seller: $error');
   }
 }
 

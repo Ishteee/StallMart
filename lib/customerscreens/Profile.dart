@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xaviers_market/customerscreens/CustomerNavbar.dart';
 import 'package:xaviers_market/customerscreens/customer_bookings_tab.dart';
-import 'package:xaviers_market/customerscreens/customer_comp_bookings.dart';
+import 'package:xaviers_market/customerscreens/customer_online_orders.dart';
 import 'package:xaviers_market/customerscreens/my_orders.dart';
 import 'package:xaviers_market/features/changePass.dart';
 import 'package:xaviers_market/features/rateUs.dart';

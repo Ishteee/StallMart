@@ -3,7 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:xaviers_market/customerscreens/customer_pending_bookings.dart';
+import 'package:xaviers_market/customerscreens/customer_pending_orders.dart';
 import 'package:xaviers_market/customerscreens/customer_settings.dart';
 import 'package:xaviers_market/customerscreens/merch_details_screen.dart';
 import 'package:xaviers_market/customerscreens/merch_products_screen.dart';
@@ -172,7 +172,13 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                       }
 
                       final stallDocs = snapshot.data!.docs;
-                      final stalls = stallDocs
+                      DateTime currentTime = DateTime.now();
+                                          List<DocumentSnapshot> activeStalls = stallDocs.where((stall) {
+              DateTime startDateTime = (stall.get('startDateTime') as Timestamp).toDate();
+              DateTime endDateTime = (stall.get('endDateTime') as Timestamp).toDate();
+              return currentTime.isAfter(startDateTime) && currentTime.isBefore(endDateTime);
+            }).toList();
+                      final stalls = activeStalls
                           .map((doc) => {
                                 'id': doc.id,
                                 'name': doc['name'],
@@ -335,7 +341,13 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                                           }
 
                                           final stallDocs = snapshot.data!.docs;
-                                          final stalls = stallDocs
+                                          DateTime currentTime = DateTime.now();
+                                          List<DocumentSnapshot> activeStalls = stallDocs.where((stall) {
+              DateTime startDateTime = (stall.get('startDateTime') as Timestamp).toDate();
+              DateTime endDateTime = (stall.get('endDateTime') as Timestamp).toDate();
+              return currentTime.isAfter(startDateTime) && currentTime.isBefore(endDateTime);
+            }).toList();
+                                          final stalls = activeStalls
                                               .map((doc) => {
                                                     'id': doc.id,
                                                     'name': doc['name'],

@@ -70,7 +70,7 @@ class _BottomNavigationState extends State<customerBottomNavigation> {
                 ),
                 const BottomNavigationBarItem(
                   icon: Icon(Icons.money),
-                  label: 'Bookings',
+                  label: 'Orders',
                 ),
                 const BottomNavigationBarItem(
                   icon: Icon(Icons.shopping_cart),
